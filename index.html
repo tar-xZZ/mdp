@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Générateur de Mot de Passe</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>Générateur de mot de passe</h1>
+    <p>Configurez, générez, analysez.</p>
+  </div>
+
+  <div class="cards-row">
+  <div class="card" id="card-config">
+    <div class="section-label">Longueur</div>
+    <div class="slider-row">
+      <input type="range" id="lenSlider" min="4" max="64" value="20" step="1">
+      <span class="val" id="lenVal">20</span>
+    </div>
+
+    <hr class="sep">
+    <div class="section-label">Jeu de caractères</div>
+    <div class="options" id="opts">
+      <div class="opt on" data-key="upper"><div class="opt-dot"></div><span class="opt-label">Majuscules (A–Z)</span></div>
+      <div class="opt on" data-key="lower"><div class="opt-dot"></div><span class="opt-label">Minuscules (a–z)</span></div>
+      <div class="opt on" data-key="digits"><div class="opt-dot"></div><span class="opt-label">Chiffres (0–9)</span></div>
+      <div class="opt" data-key="sym"><div class="opt-dot"></div><span class="opt-label">Symboles (!@#…)</span></div>
+      <div class="opt" data-key="minus"><div class="opt-dot"></div><span class="opt-label">Tiret (-)</span></div>
+      <div class="opt" data-key="under"><div class="opt-dot"></div><span class="opt-label">Underscore (_)</span></div>
+      <div class="opt" data-key="space"><div class="opt-dot"></div><span class="opt-label">Espace ( )</span></div>
+      <div class="opt" data-key="brackets"><div class="opt-dot"></div><span class="opt-label">Crochets ([]{}&lt;&gt;)</span></div>
+      <div class="opt" data-key="latin"><div class="opt-dot"></div><span class="opt-label">Latin-1 (à é ü…)</span></div>
+      <div class="opt" data-key="ambig"><div class="opt-dot"></div><span class="opt-label">Ambigus (0O Il1)</span></div>
+    </div>
+
+    <hr class="sep">
+    <div class="custom-row">
+      <label>Caractères custom :</label>
+      <input type="text" id="customChars" placeholder="ex: @€£¥">
+    </div>
+
+    <div class="pwd-box">
+      <span class="pwd-text" id="pwdDisplay">—</span>
+      <button class="copy-btn" id="copyBtn">Copier</button>
+    </div>
+    <button class="gen-btn" id="genBtn">↻ Générer un nouveau mot de passe</button>
+  </div>
+
+  <div class="card" id="card-analysis">
+    <div class="section-label">Analyse de sécurité</div>
+    <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+    <p class="strength-label" id="strengthLabel">—</p>
+    <hr class="sep">
+    <div class="metrics">
+      <div class="metric">
+        <div class="mlabel">Entropie</div>
+        <div class="mval" id="mBits">—</div>
+        <div class="msub">bits</div>
+      </div>
+      <div class="metric">
+        <div class="mlabel">Alphabet</div>
+        <div class="mval" id="mAlpha">—</div>
+        <div class="msub">caractères uniques</div>
+      </div>
+      <div class="metric">
+        <div class="mlabel">Combinaisons</div>
+        <div class="mval" id="mComb">—</div>
+        <div class="msub">possibles</div>
+      </div>
+      <div class="metric full">
+        <div class="mlabel">Temps brute force (GPU, 10⁹ tentatives/sec)</div>
+        <div class="mval" id="mCrack">—</div>
+        <div class="msub" id="mCrackSub"></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>
