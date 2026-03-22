@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Générateur de Mot de Passe</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --bg2: #141418;
+      --bg3: #1c1c22;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.15);
+      --text: #f0f0f2;
+      --muted: #888;
+      --accent: #7F77DD;
+      --accent2: #5DCAA5;
+      --red: #E24B4A;
+      --orange: #EF9F27;
+      --yellow: #BA7517;
+      --green: #639922;
+      --teal: #1D9E75;
+      --purple: #7F77DD;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .wrap { width: 100%; max-width: 560px; }
+
+    .header { margin-bottom: 2rem; }
+    .header h1 { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; color: var(--text); }
+    .header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .card {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .pwd-box {
+      background: var(--bg3);
+      border: 0.5px solid var(--border2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 15px;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.6;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 1rem 0;
+    }
+    .pwd-text { flex: 1; }
+    .copy-btn {
+      background: none;
+      border: 0.5px solid var(--border2);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .copy-btn:hover { color: var(--text); border-color: var(--text); }
+
+    .gen-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--bg3);
+      border: 0.5px solid var(--border2);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+    }
+    .gen-btn:hover { background: #222228; border-color: var(--accent); color: var(--accent); }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+    .slider-row label { font-size: 13px; color: var(--muted); min-width: 70px; }
+    .slider-row input[type=range] {
+      flex: 1;
+      accent-color: var(--accent);
+      height: 4px;
+      cursor: pointer;
+    }
+    .slider-row .val {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .sep { border: none; border-top: 0.5px solid var(--border); margin: 1rem 0; }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 1rem;
+    }
+    .opt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 8px 10px;
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .opt:hover { border-color: var(--border2); }
+    .opt.on { border-color: var(--accent); background: rgba(127,119,221,0.07); }
+    .opt input { display: none; }
+    .opt-dot {
+      width: 14px;
+      height: 14px;
+      border: 0.5px solid var(--border2);
+      border-radius: 3px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .opt.on .opt-dot { background: var(--accent); border-color: var(--accent); }
+    .opt.on .opt-dot::after {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 1px;
+      background: #fff;
+    }
+    .opt-label { font-size: 12px; color: var(--muted); }
+    .opt.on .opt-label { color: var(--text); }
+
+    .custom-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .custom-row label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .custom-row input[type=text] {
+      flex: 1;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 7px 10px;
+      border: 0.5px solid var(--border2);
+      border-radius: 6px;
+      background: var(--bg3);
+      color: var(--text);
+      outline: none;
+    }
+    .custom-row input[type=text]:focus { border-color: var(--accent); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .metric {
+      background: var(--bg3);
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .metric.full { grid-column: 1 / -1; }
+    .mlabel { font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .mval { font-size: 20px; font-weight: 500; color: var(--text); }
+    .msub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    .bar-bg {
+      height: 6px;
+      background: var(--bg3);
+      border-radius: 3px;
+      overflow: hidden;
+      border: 0.5px solid var(--border);
+      margin: 12px 0 6px;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease, background-color 0.4s ease;
+    }
+    .strength-label { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Générateur de mot de passe</h1>
+    <p>Configurez, générez, analysez.</p>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Longueur</div>
+    <div class="slider-row">
+      <input type="range" id="lenSlider" min="4" max="64" value="20" step="1">
+      <span class="val" id="lenVal">20</span>
+    </div>
+
+    <hr class="sep">
+    <div class="section-label">Jeu de caractères</div>
+    <div class="options" id="opts">
+      <label class="opt on" data-key="upper"><input type="checkbox" checked><div class="opt-dot"></div><span class="opt-label">Majuscules (A–Z)</span></label>
+      <label class="opt on" data-key="lower"><input type="checkbox" checked><div class="opt-dot"></div><span class="opt-label">Minuscules (a–z)</span></label>
+      <label class="opt on" data-key="digits"><input type="checkbox" checked><div class="opt-dot"></div><span class="opt-label">Chiffres (0–9)</span></label>
+      <label class="opt" data-key="sym"><input type="checkbox"><div class="opt-dot"></div><span class="opt-label">Symboles (!@#…)</span></label>
+      <label class="opt" data-key="minus"><input type="checkbox"><div class="opt-dot"></div><span class="opt-label">Tiret (-)</span></label>
+      <label class="opt" data-key="under"><input type="checkbox"><div class="opt-dot"></div><span class="opt-label">Underscore (_)</span></label>
+      <label class="opt" data-key="space"><input type="checkbox"><div class="opt-dot"></div><span class="opt-label">Espace ( )</span></label>
+      <label class="opt" data-key="brackets"><input type="checkbox"><div class="opt-dot"></div><span class="opt-label">Crochets ([]{}&lt;&gt;)</span></label>
+      <label class="opt" data-key="latin"><input type="checkbox"><div class="opt-dot"></div><span class="opt-label">Latin-1 (à é ü…)</span></label>
+      <label class="opt" data-key="ambig"><input type="checkbox"><div class="opt-dot"></div><span class="opt-label">Ambigus (0O Il1)</span></label>
+    </div>
+
+    <hr class="sep">
+    <div class="custom-row">
+      <label>Caractères custom :</label>
+      <input type="text" id="customChars" placeholder="ex: @€£¥">
+    </div>
+
+    <div class="pwd-box">
+      <span class="pwd-text" id="pwdDisplay">—</span>
+      <button class="copy-btn" id="copyBtn">Copier</button>
+    </div>
+    <button class="gen-btn" id="genBtn">↻ Générer un nouveau mot de passe</button>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Analyse de sécurité</div>
+    <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+    <p class="strength-label" id="strengthLabel">—</p>
+    <hr class="sep">
+    <div class="metrics">
+      <div class="metric"><div class="mlabel">Entropie</div><div class="mval" id="mBits">—</div><div class="msub">bits</div></div>
+      <div class="metric"><div class="mlabel">Alphabet</div><div class="mval" id="mAlpha">—</div><div class="msub">caractères uniques</div></div>
+      <div class="metric"><div class="mlabel">Combinaisons</div><div class="mval" id="mComb">—</div><div class="msub">possibles</div></div>
+      <div class="metric full"><div class="mlabel">Temps brute force (GPU, 10⁹ tentatives/sec)</div><div class="mval" id="mCrack">—</div><div class="msub" id="mCrackSub"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SETS = {
+  upper:    'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  lower:    'abcdefghijklmnopqrstuvwxyz',
+  digits:   '0123456789',
+  sym:      '!@#$%^&*;:,.<>?/|~`"\'=+',
+  minus:    '-',
+  under:    '_',
+  space:    ' ',
+  brackets: '[]{}()<>',
+  latin:    'àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ',
+  ambig:    '0O1lI'
+};
+
+function getAlphabet() {
+  let s = '';
+  document.querySelectorAll('#opts .opt').forEach(el => {
+    if (el.classList.contains('on')) s += SETS[el.dataset.key] || '';
+  });
+  s += document.getElementById('customChars').value;
+  return [...new Set(s.split(''))].join('');
+}
+
+function generate() {
+  const len = parseInt(document.getElementById('lenSlider').value);
+  const alpha = getAlphabet();
+  if (!alpha.length) { document.getElementById('pwdDisplay').textContent = '⚠ Sélectionnez au moins un jeu'; return; }
+  const arr = new Uint32Array(len);
+  crypto.getRandomValues(arr);
+  let pwd = '';
+  for (let i = 0; i < len; i++) pwd += alpha[arr[i] % alpha.length];
+  document.getElementById('pwdDisplay').textContent = pwd;
+  analyze(pwd, alpha.length);
+}
+
+function analyze(pwd, alphaSize) {
+  const len = pwd.length;
+  const entropy = len * Math.log2(alphaSize);
+  document.getElementById('mBits').textContent = Math.round(entropy);
+  document.getElementById('mAlpha').textContent = alphaSize;
+  const combExp = entropy;
+  document.getElementById('mComb').textContent = combExp < 53
+    ? Math.pow(2, combExp).toExponential(2)
+    : '2^' + Math.round(combExp);
+
+  const pct = Math.min(100, (entropy / 128) * 100);
+  const bar = document.getElementById('barFill');
+  bar.style.width = pct.toFixed(1) + '%';
+
+  let color, label;
+  if (entropy < 28)       { color = '#E24B4A'; label = 'Très faible — craquable en secondes'; }
+  else if (entropy < 36)  { color = '#EF9F27'; label = 'Faible — craquable rapidement'; }
+  else if (entropy < 60)  { color = '#BA7517'; label = 'Moyen — résiste quelques heures'; }
+  else if (entropy < 80)  { color = '#639922'; label = 'Bon — résiste des années'; }
+  else if (entropy < 100) { color = '#1D9E75'; label = 'Fort — résiste des millénaires'; }
+  else                    { color = '#7F77DD'; label = 'Exceptionnel — inattaquable en pratique'; }
+
+  bar.style.backgroundColor = color;
+  document.getElementById('strengthLabel').textContent = label;
+
+  const secs = Math.pow(2, entropy) / 2 / 1e9;
+  document.getElementById('mCrack').textContent = formatTime(secs);
+  document.getElementById('mCrackSub').textContent = 'scénario moyen, attaque brute force';
+}
+
+function formatTime(s) {
+  if (!isFinite(s) || s > 1e30) return '> âge de l\'univers ×10²⁰';
+  if (s < 1) return '< 1 seconde';
+  if (s < 60) return Math.round(s) + ' secondes';
+  if (s < 3600) return Math.round(s / 60) + ' minutes';
+  if (s < 86400) return Math.round(s / 3600) + ' heures';
+  if (s < 365.25 * 86400) return Math.round(s / 86400) + ' jours';
+  const y = s / (365.25 * 86400);
+  if (y < 1e3) return Math.round(y) + ' ans';
+  if (y < 1e6) return (y / 1e3).toFixed(1) + ' milliers d\'ans';
+  if (y < 1e9) return (y / 1e6).toFixed(1) + ' millions d\'ans';
+  return (y / 1e9).toFixed(1) + ' milliards d\'ans';
+}
+
+document.getElementById('lenSlider').addEventListener('input', function() {
+  document.getElementById('lenVal').textContent = this.value;
+  generate();
+});
+
+document.querySelectorAll('#opts .opt').forEach(el => {
+  el.addEventListener('click', () => {
+    el.classList.toggle('on');
+    el.querySelector('input').checked = el.classList.contains('on');
+    generate();
+  });
+});
+
+document.getElementById('customChars').addEventListener('input', generate);
+document.getElementById('genBtn').addEventListener('click', generate);
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const txt = document.getElementById('pwdDisplay').textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copié !';
+    setTimeout(() => btn.textContent = 'Copier', 1500);
+  });
+});
+
+generate();
+</script>
+</body>
+</html>
