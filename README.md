@@ -1,4 +1,4 @@
-# 🔐 Générateur de Mot de Passe
+#  Générateur de Mot de Passe
 
 Générateur de mots de passe sécurisé avec analyse d'entropie en temps réel.
 
