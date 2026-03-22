@@ -1,3 +1,3 @@
 # Générateur de Mot de Passe
 
-[https://tar-xzz.github.io/mdp/](url)
+https://tar-xzz.github.io/mdp/
