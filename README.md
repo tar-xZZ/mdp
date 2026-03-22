@@ -1,3 +1,3 @@
 # Générateur de Mot de Passe
 
-https://kbnn-z.github.io/mdp/
+[https://tar-xzz.github.io/mdp/](url)
